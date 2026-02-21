@@ -16,19 +16,19 @@
 
 Мы — команда энтузиастов, увлеченных созданием крутого продукта:
 
-*   **Архипов Артем** - [GitHub](https://github.com/Saucesamba)
-*   **Оглоблина Александра** - [GitHub](https://github.com/Ahandii)
-*   **Косыхин Тимофей** - [GitHub](https://github.com/Tim-arc)
-*   **Мальков Олег** - [GitHub](https://github.com/Karielka)
+* **Архипов Артем** - [GitHub](https://github.com/Saucesamba)
+* **Оглоблина Александра** - [GitHub](https://github.com/Ahandii)
+* **Косыхин Тимофей** - [GitHub](https://github.com/Tim-arc)
+* **Мальков Олег** - [GitHub](https://github.com/Karielka)
 
 ## 🧙‍♂️ Наши менторы
 
 Мы благодарны за ценные советы и поддержку нашим менторам:
 
-*   **Алехин Владислав** - [GitHub](https://github.com/3kybika)
-*   **Зотов Алексей** - [GitHub](https://github.com/let-robots-reign)
-*   **Мироненько Даниил🏅** - [GitHub](https://github.com/dmironenko)
-*   **Эльвира Слободян** - [Telegram](https://t.me/im_ellie)
+* **Алехин Владислав** - [GitHub](https://github.com/3kybika)
+* **Зотов Алексей** - [GitHub](https://github.com/let-robots-reign)
+* **Мироненько Даниил🏅** - [GitHub](https://github.com/dmironenko)
+* **Эльвира Слободян** - [Telegram](https://t.me/im_ellie)
 
 ---
 
