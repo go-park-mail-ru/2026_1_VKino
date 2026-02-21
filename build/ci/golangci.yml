@@ -1,0 +1,87 @@
+version: "2"
+
+run:
+  modules-download-mode: vendor
+
+output:
+  path-mode: abs
+  formats:
+    text:
+      path: stdout
+
+formatters:
+  enable:
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - api$
+      - build$
+      - configs$
+      - deployments$
+      - vendor$
+      - \.git$
+
+linters:
+  default: all
+  disable:
+    - wsl
+    - funlen
+    - ireturn
+    - wrapcheck
+    - varnamelen
+    - exhaustruct
+    - noinlineerr
+    - testpackage
+    - tagliatelle
+    - containedctx
+    - paralleltest
+    - gochecknoinits
+    - nonamedreturns
+    - gochecknoglobals
+
+  settings:
+    lll:
+      line-length: 120
+    nakedret:
+      max-func-lines: 60
+    gocognit:
+      min-complexity: 20
+    gocyclo:
+      min-complexity: 7
+    dupl:
+      threshold: 200
+    errcheck:
+      check-blank: true
+    mnd:
+      ignored-numbers:
+        - "2"
+    govet:
+      disable:
+        - fieldalignment
+      enable-all: true
+    revive:
+      rules:
+        - name: context-keys-type
+          disabled: true
+
+  exclusions:
+    generated: lax
+    paths:
+      - api$
+      - build$
+      - configs$
+      - deployments$
+      - vendor$
+      - \.git$
+    presets:
+      - legacy
+      - comments
+      - std-error-handling
+      - common-false-positives
+    rules:
+      - linters:
+          - lll
+        source: "^//go:generate "

@@ -1,0 +1,5 @@
+/.github/ @dmironenko
+
+**/*.go       @dmironenko
+/build/       @dmironenko
+/deployments/ @dmironenko
