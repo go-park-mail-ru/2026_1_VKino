@@ -30,7 +30,7 @@
 
 * **Алехин Владислав** - [GitHub](https://github.com/3kybika)
 * **Зотов Алексей** - [GitHub](https://github.com/let-robots-reign)
-* **Мироненко Даниил🏅** - [GitHub](https://github.com/dmironenko)
+* **Мироненко Даниил🏅🏅** - [GitHub](https://github.com/dmironenko)
 * **Эльвира Слободян** - [Telegram](https://t.me/im_ellie)
 
 ---
