@@ -6,6 +6,9 @@
 
 **Vkino** — современный онлайн кинотеатр, разрабатываемый с любовью к кино и вниманием к каждой детали.
 
+🔗 **Ссылки:**  
+* [Figma](https://www.figma.com/design/jR5lArGm6QGh69Y2kPTKUZ/Vkino?node-id=0-1&p=f&m=draw)
+* [GitHub - Frontend](https://github.com/frontend-park-mail-ru/2026_1_Vkino)
 
 ## 🚀 Попробовать
 
@@ -27,7 +30,7 @@
 
 * **Алехин Владислав** - [GitHub](https://github.com/3kybika)
 * **Зотов Алексей** - [GitHub](https://github.com/let-robots-reign)
-* **Мироненько Даниил🏅** - [GitHub](https://github.com/dmironenko)
+* **Мироненко Даниил🏅🏅** - [GitHub](https://github.com/dmironenko)
 * **Эльвира Слободян** - [Telegram](https://t.me/im_ellie)
 
 ---
