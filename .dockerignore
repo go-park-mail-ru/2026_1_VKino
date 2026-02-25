@@ -1,5 +1,4 @@
 .git
-*.exe
 *.out
 .idea
 .vscode
