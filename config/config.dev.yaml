@@ -1,0 +1,7 @@
+database:
+
+server:
+  server_port: 8080
+  server_host: "localhost"
+
+jwt:
