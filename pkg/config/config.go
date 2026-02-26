@@ -3,24 +3,29 @@ package config
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"strings"
 )
 
-func LoadConfig(path string, cfg interface{}) error {
+func LoadConfig(path string, cfg any) error {
+	v := viper.New()
 
 	//если не запускаем конкретный конфиг - используем локальный
 	if path != "" {
-		viper.SetConfigFile(path)
+		v.SetConfigFile(path)
 	} else {
-		viper.AddConfigPath("configs/")
-		viper.SetConfigName("api")
-		viper.SetConfigType("yaml")
+		v.AddConfigPath("configs/")
+		v.SetConfigName("api")
+		v.SetConfigType("yaml")
 	}
 
-	if err := viper.ReadInConfig(); err != nil {
+	v.AutomaticEnv()
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	if err := v.ReadInConfig(); err != nil {
 		return fmt.Errorf("Error reading config file, %s", err)
 	}
 
-	if err := viper.Unmarshal(cfg); err != nil {
+	if err := v.Unmarshal(cfg); err != nil {
 		return fmt.Errorf("Error unmarshalling config, %s", err)
 	}
 	return nil
