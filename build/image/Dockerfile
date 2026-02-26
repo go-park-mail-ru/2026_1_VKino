@@ -1,22 +1,29 @@
 FROM golang:1.26.0-alpine3.23 AS builder
 
-WORKDIR /app
+ENV CGO_ENABLED=0
+ENV GOOS=linux
 
-COPY ../../go.mod  ./
+RUN apk update --no-cache && apk add --no-cache tzdata
+
+COPY go.mod  /vkinoapi/
+
+WORKDIR /vkinoapi
+
 RUN go mod download
 
-COPY ../.. .
+COPY . /vkinoapi
 
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o myapp ./cmd/api
+RUN go build -ldflags="-w -s" -o /vkinoapi/bin/vkinoapi ./cmd/api/main.go
 
 FROM golang:1.26.0-alpine3.23
 
-WORKDIR /root/
-
-COPY --from=builder /app/myapp .
+ENV TZ=Europe/Moscow
 
 EXPOSE 8080
 
-ENTRYPOINT ./api
+WORKDIR /vkinoapi
 
-CMD ["--config"]
+COPY --from=builder /usr/share/zoneinfo/${TZ} /etc/localtime
+RUN echo $TZ > /etc/timezone
+
+COPY --from=builder /vkinoapi/bin/vkinoapi .

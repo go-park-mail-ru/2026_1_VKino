@@ -1,8 +1,8 @@
 services:
   api:
     build:
-      context: ../..
-      dockerfile: ../../build/image/Dockerfile
+      context: ..
+      dockerfile: /build/image/Dockerfile
     expose:
       - 8080
     restart: always
