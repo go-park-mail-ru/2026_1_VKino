@@ -3,22 +3,24 @@ package app
 import (
 	"flag"
 	"fmt"
-	"github.com/go-park-mail-ru/2026_1_VKino/pkg/config"
 	"log"
+
+	"github.com/go-park-mail-ru/2026_1_VKino/pkg/config"
 )
 
 func Run() error {
-
 	configPath := flag.String("config", "", "config file path")
+
 	flag.Parse()
 
 	cfg := &Config{}
-	err := config.LoadConfig(*configPath, &cfg)
 
+	err := config.LoadConfig(*configPath, &cfg)
 	if err != nil {
-		return fmt.Errorf("Unable to load config %w", err)
-	} else {
-		log.Printf("Server started on %s:%d", cfg.Server.Port)
+		return fmt.Errorf("unable to load config %w", err)
 	}
+
+	log.Printf("Server started on %d", cfg.Server.Port)
+
 	return nil
 }
