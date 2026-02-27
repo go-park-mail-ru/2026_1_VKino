@@ -10,7 +10,7 @@ import (
 func LoadConfig(path string, cfg any) error {
 	v := viper.New()
 
-	//если не запускаем конкретный конфиг - используем локальный
+	// если не запускаем конкретный конфиг - используем локальный
 	if path != "" {
 		v.SetConfigFile(path)
 	} else {
@@ -29,5 +29,6 @@ func LoadConfig(path string, cfg any) error {
 	if err := v.Unmarshal(cfg); err != nil {
 		return fmt.Errorf("error unmarshalling config, %w", err)
 	}
+
 	return nil
 }
