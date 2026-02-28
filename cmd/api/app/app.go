@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/go-park-mail-ru/2026_1_VKino/pkg/config"
+	"github.com/go-park-mail-ru/2026_1_VKino/pkg/server"
 )
 
 func Run() error {
@@ -20,7 +21,8 @@ func Run() error {
 		return fmt.Errorf("unable to load config %w", err)
 	}
 
+	addr := fmt.Sprintf(":%d", cfg.Server.Port)
 	log.Printf("Server started on %d", cfg.Server.Port)
 
-	return nil
+	return server.RunServer(addr)
 }
