@@ -1,7 +1,14 @@
 package main
 
-import "log"
+import (
+	"log"
+
+	"github.com/go-park-mail-ru/2026_1_VKino/cmd/api/app"
+)
 
 func main() {
-	log.Println("hello, world")
+	err := app.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
