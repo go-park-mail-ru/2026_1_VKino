@@ -20,23 +20,23 @@ var errToHTTP = map[error]httpErr{
 	ErrInvalidToken:       {status: http.StatusUnauthorized, message: "unauthorized"},
 }
 
-// Порядок важен, чтобы поведение было детерминированным
-var errOrder = []error{
-	ErrUserAlreadyExists,
-	ErrInvalidCredentials,
-	ErrNoSession,
-	ErrInvalidToken,
-}
-
 // перекладывать статус и тело в writeError
 func writeServiceError(w http.ResponseWriter, err error) {
-	for _, target := range errOrder {
-		if errors.Is(err, target) {
-			mapped := errToHTTP[target]
-			httpjson.WriteError(w, mapped.status, mapped.message)
-			return
-		}
-	}
+	var key error
 
-	httpjson.WriteError(w, http.StatusInternalServerError, "internal server error")
+	switch {
+	case errors.Is(err, ErrUserAlreadyExists):
+		key = ErrUserAlreadyExists
+	case errors.Is(err, ErrInvalidCredentials):
+		key = ErrInvalidCredentials
+	case errors.Is(err, ErrNoSession):
+		key = ErrNoSession
+	case errors.Is(err, ErrInvalidToken):
+		key = ErrInvalidToken
+	default:
+		httpjson.WriteError(w, http.StatusInternalServerError, "internal server error")
+		return
+	}
+	mapped := errToHTTP[key]
+	httpjson.WriteError(w, mapped.status, mapped.message)
 }
