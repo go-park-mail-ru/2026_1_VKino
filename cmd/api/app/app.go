@@ -28,10 +28,10 @@ func Run() error {
 	mux := http.NewServeMux()
 
 	// ручки на signIn + signUp + refresh
-	authService := authapp.NewService()
+	authService := authapp.NewService(cfg.Auth)
 	authHandler := authapp.NewHandler(authService)
 	authHandler.RegisterRoutes(mux)
 
-	//запуск сервера (я думаю можно несколько запусков, если на мапах будут мьюетексы)
-	return server.RunServer(addr, mux)
+	//запуск сервера (я думаю можно несколько запусков, если на мапах будут мьютексы)
+	return server.RunServer(addr, mux, cfg.Server.Timeouts)
 }

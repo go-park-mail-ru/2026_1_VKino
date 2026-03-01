@@ -7,11 +7,29 @@ import (
 	"net/http"
 )
 
+type errorResponse struct {
+	Error string
+}
 
-func WriteJSON(w http.ResponseWriter, status int, v any) {
+func WriteError(w http.ResponseWriter, status int, message string) {
+	WriteJSON(w, status, errorResponse{Error: message})
+}
+
+
+func WriteJSON(w http.ResponseWriter, status int, v any) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return fmt.Errorf("marshal json: %w", err)
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(v)
+
+	if _, err := w.Write(append(b, '\n')); err != nil {
+		return fmt.Errorf("write response: %w", err)
+	}
+
+	return nil
 }
 
 func ReadJSON(r *http.Request, dst any) error {

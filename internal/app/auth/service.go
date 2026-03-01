@@ -9,17 +9,19 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type Config struct {
+	JWTSecret         string        `mapstructure:"jwt_secret"`
+	AccessTokenTTL    time.Duration `mapstructure:"access_token_ttl"`
+	RefreshTokenTTL   time.Duration `mapstructure:"refresh_token_ttl"`
+	RefreshCookieName string        `mapstructure:"refresh_cookie_name"`
+	CookieSecure      bool          `mapstructure:"cookie_secure"`
+}
+
 type Service struct {
+	cfg Config
 	userMap map[string]string
 	userSessions map[string]TokenPair
 }
-
-const (
-	// вынести в конфиг
-	Secret = "4v29o7bg3p9h8cp9be7bc9w7bcg9py7bx9s"
-	AccessTokenTTL = 15 * time.Minute
-	RefreshTokenTTL = 14 * 24 * time.Hour
-)
 
 var (
 	ErrUserAlreadyExists = errors.New("user already exists")
@@ -28,10 +30,24 @@ var (
 	ErrInvalidToken = errors.New("invalid token")
 )
 
-func NewService() *Service {
+func NewService(cfg Config) *Service {
+	// дефолты
+	if cfg.JWTSecret == "" {
+		cfg.JWTSecret = "dev-secret"
+	}
+	if cfg.AccessTokenTTL == 0 {
+		cfg.AccessTokenTTL = 15 * time.Minute
+	}
+	if cfg.RefreshTokenTTL == 0 {
+		cfg.RefreshTokenTTL = 14 * 24 * time.Hour
+	}
+	if cfg.RefreshCookieName == "" {
+		cfg.RefreshCookieName = "refresh_token"
+	}
 	// Саша, здесь нужно будет подключить твои модельки!
 	// Мьютексы?
 	return &Service{
+		cfg: cfg,
 		userMap: map[string]string{},
 		userSessions: map[string]TokenPair{},
 	}
@@ -62,7 +78,7 @@ func (s *Service) tokenGenerate(user string, tokenTTL time.Duration) (string, er
 		IssuedAt: jwt.NewNumericDate(time.Now()),
 		Subject: user,
 	})
-	stringToken, err := token.SignedString([]byte(Secret))
+	stringToken, err := token.SignedString([]byte(s.cfg.JWTSecret))
 	if err != nil {
 		return "", err
 	}
@@ -70,11 +86,11 @@ func (s *Service) tokenGenerate(user string, tokenTTL time.Duration) (string, er
 }
 
 func (s *Service) tokenPairGenerate(user User) (TokenPair, error) {
-	accessToken, err := s.tokenGenerate(s.userToString(user), AccessTokenTTL)
+	accessToken, err := s.tokenGenerate(s.userToString(user), s.cfg.AccessTokenTTL)
 	if err != nil {
 		return TokenPair{}, fmt.Errorf("access token generate error: %w", err)
 	}
-	refreshToken, err := s.tokenGenerate(s.userToString(user), RefreshTokenTTL)
+	refreshToken, err := s.tokenGenerate(s.userToString(user), s.cfg.RefreshTokenTTL)
 	if err != nil {
 		return TokenPair{}, fmt.Errorf("refresh token generate error: %w", err)
 	}
@@ -141,7 +157,7 @@ func (s *Service) parseToken(tokenString string) (*jwt.RegisteredClaims, error) 
 		if token.Method == nil || token.Method.Alg() != jwt.SigningMethodHS256.Alg() {
 			return nil, ErrInvalidToken
 		}
-		return []byte(Secret), nil
+		return []byte(s.cfg.JWTSecret), nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("%w: %v", ErrInvalidToken, err)

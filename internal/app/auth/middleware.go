@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 	"strings"
+
+	"github.com/go-park-mail-ru/2026_1_VKino/pkg/httpjson"
 )
 
 type ctxKey string
@@ -14,25 +16,25 @@ func (s *Service) Middleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := strings.TrimSpace(r.Header.Get("Authorization"))
 		if authHeader == "" {
-			writeError(w, http.StatusUnauthorized, "unauthorized")
+			httpjson.WriteError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		}
 
 		const bearerPrefix = "Bearer "
 		if !strings.HasPrefix(authHeader, bearerPrefix) {
-			writeError(w, http.StatusUnauthorized, "unauthorized")
+			httpjson.WriteError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		}
 
 		accessToken := strings.TrimSpace(strings.TrimPrefix(authHeader, bearerPrefix))
 		if accessToken == "" {
-			writeError(w, http.StatusUnauthorized, "unauthorized")
+			httpjson.WriteError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		}
 
 		email, err := s.validateAccessToken(accessToken)
 		if err != nil {
-			writeError(w, http.StatusUnauthorized, "unauthorized")
+			httpjson.WriteError(w, http.StatusUnauthorized, "unauthorized")
 			return
 		}
 

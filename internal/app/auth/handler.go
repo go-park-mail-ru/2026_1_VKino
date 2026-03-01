@@ -2,7 +2,7 @@ package auth
 
 import (
 	"net/http"
-	"errors"
+	"time"
 
 	"github.com/go-park-mail-ru/2026_1_VKino/pkg/httpjson"
 )
@@ -24,36 +24,16 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 }
 
 
-func writeError(w http.ResponseWriter, status int, message string) {
-	httpjson.WriteJSON(w, status, errorResponse{Error: message})
-}
-
-
-// обработка ошибок от service.go
-func (h *Handler) writeServiceError(w http.ResponseWriter, err error) {
-	switch {
-	case errors.Is(err, ErrUserAlreadyExists):
-		writeError(w, http.StatusConflict, "user already exists")
-	case errors.Is(err, ErrInvalidCredentials):
-		writeError(w, http.StatusUnauthorized, "invalid credentials")
-	case errors.Is(err, ErrNoSession), errors.Is(err, ErrInvalidToken):
-		writeError(w, http.StatusUnauthorized, "unauthorized")
-	default:
-		writeError(w, http.StatusInternalServerError, "internal server error")
-	}
-}
-
-
 // ставим refresh-token в cookie
-func setRefreshCookie(w http.ResponseWriter, refreshToken string) {
+func setRefreshCookie(h *Handler, w http.ResponseWriter, refreshToken string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:     "refresh_token",
+		Name:     h.service.cfg.RefreshCookieName,
 		Value:    refreshToken,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   h.service.cfg.CookieSecure, // конфиг! Чтобы можно было пока работать по http на localhost
 		SameSite: http.SameSiteLaxMode,
-		MaxAge:   int(RefreshTokenTTL.Seconds()),
+		Expires:  time.Now().Add(h.service.cfg.RefreshTokenTTL),
 	})
 }
 
@@ -61,16 +41,16 @@ func setRefreshCookie(w http.ResponseWriter, refreshToken string) {
 func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 	var req SignUpRequest
 	if err := httpjson.ReadJSON(r, &req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid json body")
+		httpjson.WriteError(w, http.StatusBadRequest, "invalid json body")
 		return
 	}
 
 	tokens, err := h.service.SignUp(req.Email, req.Password)
 	if err != nil {
-		h.writeServiceError(w, err)
+		writeServiceError(w, err)
 		return
 	}
-	setRefreshCookie(w, tokens.RefreshToken)
+	setRefreshCookie(h, w, tokens.RefreshToken)
 	httpjson.WriteJSON(w, http.StatusCreated, tokens)
 }
 
@@ -78,16 +58,16 @@ func (h *Handler) signUp(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) signIn(w http.ResponseWriter, r *http.Request) {
 	var req SignInRequest
 	if err := httpjson.ReadJSON(r, &req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid json body")
+		httpjson.WriteError(w, http.StatusBadRequest, "invalid json body")
 		return
 	}
 
 	tokens, err := h.service.SignIn(req.Email, req.Password)
 	if err != nil {
-		h.writeServiceError(w, err)
+		writeServiceError(w, err)
 		return
 	}
-	setRefreshCookie(w, tokens.RefreshToken)
+	setRefreshCookie(h, w, tokens.RefreshToken)
 	httpjson.WriteJSON(w, http.StatusOK, tokens)
 }
 
@@ -95,22 +75,22 @@ func (h *Handler) signIn(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) refresh(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("refresh_token")
 	if err != nil {
-		writeError(w, http.StatusUnauthorized, "unauthorized")
+		httpjson.WriteError(w, http.StatusUnauthorized, "unauthorized")
 		return
 	}
 
 	email, err := h.service.validateRefreshToken(cookie.Value)
 	if err != nil {
-		h.writeServiceError(w, err)
+		writeServiceError(w, err)
 		return
 	}
 	tokenPair, err := h.service.refresh(email)
 	if err != nil {
-		h.writeServiceError(w, err)
+		writeServiceError(w, err)
 		return
 	}
 
-	setRefreshCookie(w, tokenPair.RefreshToken)
+	setRefreshCookie(h, w, tokenPair.RefreshToken)
 	httpjson.WriteJSON(w, http.StatusOK, accessTokenResponse{
 		AccessToken: tokenPair.AccessToken,
 	})

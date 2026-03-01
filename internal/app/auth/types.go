@@ -23,7 +23,3 @@ type SignInRequest struct {
 	Email string
 	Password string
 }
-
-type errorResponse struct {
-	Error string
-}
