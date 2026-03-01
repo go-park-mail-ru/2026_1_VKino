@@ -1,31 +1,22 @@
 package server
 
 import (
-	"fmt"
+	"time"
 	"net/http"
-
-	authapp "github.com/go-park-mail-ru/2026_1_VKino/internal/app/auth"
 )
 
 type Config struct {
 	Port int `mapstructure:"port"`
 }
 
-func RunServer(addr string) error {
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Addr:", addr, "URL:", r.URL.String())
-	})
-
-	// ручки на signIn + signUp
-	authService := authapp.NewService()
-	authHandler := authapp.NewHandler(authService)
-	authHandler.RegisterRoutes(mux)
-
+func RunServer(addr string, handler http.Handler) error {
 	server := http.Server{
-		Addr:    addr,
-		Handler: mux,
+		Addr:              addr,
+		Handler:           handler,
+		ReadHeaderTimeout: 5  * time.Second,
+		ReadTimeout:       10 * time.Second,
+		WriteTimeout:      15 * time.Second,
+		IdleTimeout:       60 * time.Second,
 	}
 	return server.ListenAndServe()
 }

@@ -5,6 +5,10 @@ type User struct {
 	Password string
 }
 
+type accessTokenResponse struct {
+	AccessToken string
+}
+
 type TokenPair struct {
 	AccessToken string
 	RefreshToken string
@@ -18,4 +22,8 @@ type SignUpRequest struct {
 type SignInRequest struct {
 	Email string
 	Password string
+}
+
+type errorResponse struct {
+	Error string
 }
